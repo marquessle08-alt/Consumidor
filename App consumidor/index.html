@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divisor de Conta - Bar/Restaurante</title>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.1.1/dist/tesseract.min.js"></script>
+    <style>
+        :root {
+            --primary: #667eea;
+            --primary-dark: #764ba2;
+            --secondary: #f093fb;
+            --success: #4ade80;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --bg: #ffffff;
+            --bg-light: #f9fafb;
+            --border: #e5e7eb;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(120deg, var(--primary), var(--primary-dark));
+            padding: 20px;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: var(--text);
+            font-size: 32px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: var(--text-light);
+            font-size: 16px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--bg-light);
+            border-radius: 15px;
+            border: 2px solid var(--border);
+        }
+
+        .section-title {
+            color: var(--text);
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(120deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #22c55e;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--error);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--text-light);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+        }
+
+        .people-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .person-card {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .person-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .person-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .person-name {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 16px;
+        }
+
+        .person-total {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        .items-list {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+
+        .item-name {
+            color: var(--text);
+            flex: 1;
+        }
+
+        .item-value {
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .btn-remove {
+            background: transparent;
+            border: none;
+            color: var(--error);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 0 5px;
+            transition: transform 0.2s;
+        }
+
+        .btn-remove:hover {
+            transform: scale(1.2);
+        }
+
+        .summary {
+            background: linear-gradient(120deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .summary-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 16px;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            font-size: 20px;
+            margin-top: 10px;
+            padding-top: 20px;
+            border-top: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .summary-label {
+            opacity: 0.9;
+        }
+
+        .summary-value {
+            font-weight: 600;
+        }
+
+        .equal-division {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .equal-division-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        /* Câmera e OCR Styles */
+        .camera-section {
+            position: relative;
+        }
+
+        .camera-preview {
+            width: 100%;
+            max-width: 100%;
+            border-radius: 10px;
+            display: none;
+            margin-bottom: 15px;
+        }
+
+        .camera-preview.active {
+            display: block;
+        }
+
+        .camera-video {
+            width: 100%;
+            max-width: 100%;
+            border-radius: 10px;
+            display: none;
+            background: #000;
+        }
+
+        .camera-video.active {
+            display: block;
+        }
+
+        .camera-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-camera {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1001;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: var(--error);
+        }
+
+        .extracted-items {
+            margin-top: 20px;
+        }
+
+        .extracted-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: var(--bg-light);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 2px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .extracted-item:hover {
+            border-color: var(--primary);
+        }
+
+        .extracted-item input[type="text"],
+        .extracted-item input[type="number"],
+        .extracted-item select {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .extracted-item input[type="text"]:focus,
+        .extracted-item input[type="number"]:focus,
+        .extracted-item select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .extracted-item-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .ocr-text-preview {
+            background: var(--bg-light);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            color: var(--text);
+            white-space: pre-wrap;
+            border: 2px solid var(--border);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+
+            .form-group {
+                min-width: 100%;
+            }
+
+            .people-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍽️ Divisor de Conta</h1>
+            <p>Gerencie os consumos de cada pessoa na mesa</p>
+        </div>
+
+        <!-- Seção: Capturar Cupom Fiscal -->
+        <div class="section camera-section">
+            <div class="section-title">📷 Capturar Cupom Fiscal</div>
+            <div class="form-row">
+                <div class="form-group" style="flex: 1;">
+                    <button class="btn btn-primary btn-camera" onclick="startCamera()">
+                        📸 Abrir Câmera
+                    </button>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+                    <button class="btn btn-secondary btn-camera" onclick="document.getElementById('fileInput').click()">
+                        📁 Escolher Imagem
+                    </button>
+                </div>
+            </div>
+            <video id="cameraVideo" class="camera-video" autoplay playsinline></video>
+            <canvas id="captureCanvas" style="display: none;"></canvas>
+            <img id="cameraPreview" class="camera-preview" alt="Preview">
+            <div id="cameraControls" class="camera-controls" style="display: none;">
+                <button class="btn btn-success" onclick="capturePhoto()">📷 Capturar Foto</button>
+                <button class="btn btn-danger" onclick="stopCamera()">❌ Cancelar</button>
+            </div>
+        </div>
+
+        <!-- Seção: Adicionar Pessoa -->
+        <div class="section">
+            <div class="section-title">➕ Adicionar Pessoa</div>
+            <div class="form-row">
+            <div class="form-group">
+                    <label for="personName">Nome da Pessoa</label>
+                    <input type="text" id="personName" placeholder="Ex: João, Maria, etc.">
+                </div>
+                <div class="form-group" style="display: flex; align-items: flex-end;">
+                    <button class="btn btn-primary" onclick="addPerson()">Adicionar Pessoa</button>
+                </div>
+            </div>
+            </div>
+
+        <!-- Seção: Adicionar Consumo -->
+        <div class="section">
+            <div class="section-title">🛒 Adicionar Consumo</div>
+            <div class="form-row">
+            <div class="form-group">
+                    <label for="itemName">Nome do Item</label>
+                    <input type="text" id="itemName" placeholder="Ex: Cerveja, Pizza, etc.">
+                </div>
+                <div class="form-group">
+                    <label for="itemValue">Valor (R$)</label>
+                    <input type="number" id="itemValue" step="0.01" min="0" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label for="itemPerson">Pessoa</label>
+                    <select id="itemPerson">
+                        <option value="">Selecione uma pessoa</option>
+                    </select>
+                </div>
+                <div class="form-group" style="display: flex; align-items: flex-end;">
+                    <button class="btn btn-success" onclick="addItem()">Adicionar Item</button>
+                </div>
+            </div>
+            </div>
+
+        <!-- Lista de Pessoas e Consumos -->
+        <div class="section">
+            <div class="section-title">👥 Pessoas e Consumos</div>
+            <div id="peopleList" class="people-list">
+                <div class="empty-state">
+                    <div class="empty-state-icon">👤</div>
+                    <p>Nenhuma pessoa adicionada ainda.</p>
+                    <p style="font-size: 14px; margin-top: 10px;">Adicione pessoas para começar!</p>
+                </div>
+            </div>
+            </div>
+
+        <!-- Resumo Final -->
+        <div id="summarySection" class="summary" style="display: none;">
+            <div class="summary-title">📊 Resumo da Conta</div>
+            <div id="summaryContent"></div>
+            <div class="equal-division">
+                <div>💵 Valor por pessoa (divisão igual)</div>
+                <div class="equal-division-value" id="equalDivisionValue">R$ 0,00</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loadingText">Processando imagem...</div>
+            </div>
+
+    <!-- Modal de Itens Extraídos -->
+    <div id="itemsModal" class="modal" onclick="if(event.target === this) closeItemsModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 class="modal-title">📋 Itens Extraídos do Cupom</h2>
+                <button class="modal-close" onclick="closeItemsModal()">×</button>
+            </div>
+            <div id="ocrTextPreview" class="ocr-text-preview" style="display: none;"></div>
+            <div class="extracted-items" id="extractedItems"></div>
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button class="btn btn-success" onclick="addExtractedItems()" style="flex: 1;">
+                    ✅ Adicionar Itens Selecionados
+                </button>
+                <button class="btn btn-secondary" onclick="closeItemsModal()" style="flex: 1;">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let people = [];
+        let stream = null;
+        let extractedItemsData = [];
+        let ocrText = '';
+
+        // Câmera
+        async function startCamera() {
+            try {
+                const video = document.getElementById('cameraVideo');
+                const controls = document.getElementById('cameraControls');
+                const preview = document.getElementById('cameraPreview');
+                
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'environment',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    } 
+                });
+                
+                video.srcObject = stream;
+                video.classList.add('active');
+                controls.style.display = 'flex';
+                preview.classList.remove('active');
+            } catch (error) {
+                alert('Erro ao acessar a câmera: ' + error.message);
+                console.error('Erro na câmera:', error);
+            }
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            const video = document.getElementById('cameraVideo');
+            const controls = document.getElementById('cameraControls');
+            const preview = document.getElementById('cameraPreview');
+            
+            video.srcObject = null;
+            video.classList.remove('active');
+            controls.style.display = 'none';
+            preview.classList.remove('active');
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('cameraVideo');
+            const canvas = document.getElementById('captureCanvas');
+            const preview = document.getElementById('cameraPreview');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0);
+            
+            const imageData = canvas.toDataURL('image/jpeg');
+            preview.src = imageData;
+            preview.classList.add('active');
+            
+            stopCamera();
+            processImage(imageData);
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const preview = document.getElementById('cameraPreview');
+                    preview.src = e.target.result;
+                    preview.classList.add('active');
+                    processImage(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // OCR e Processamento
+        async function processImage(imageData) {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const loadingText = document.getElementById('loadingText');
+            
+            loadingOverlay.classList.add('active');
+            loadingText.textContent = 'Processando imagem com OCR...';
+            
+            try {
+                const { data: { text } } = await Tesseract.recognize(imageData, 'por', {
+                    logger: m => {
+                        if (m.status === 'recognizing text') {
+                            loadingText.textContent = `Processando... ${Math.round(m.progress * 100)}%`;
+                        }
+                    }
+                });
+                
+                ocrText = text;
+                loadingText.textContent = 'Extraindo itens e valores...';
+                
+                const items = extractItemsFromText(text);
+                extractedItemsData = items;
+                
+                loadingOverlay.classList.remove('active');
+                showExtractedItemsModal(items, text);
+            } catch (error) {
+                loadingOverlay.classList.remove('active');
+                alert('Erro ao processar imagem: ' + error.message);
+                console.error('Erro no OCR:', error);
+            }
+        }
+
+        // Extrair itens do texto do cupom
+        function extractItemsFromText(text) {
+            const items = [];
+            const lines = text.split('\n').filter(line => line.trim());
+            
+            // Padrões comuns em cupons fiscais brasileiros
+            const valuePatterns = [
+                /R\$\s*(\d+[.,]\d{2})/gi,
+                /(\d+[.,]\d{2})\s*R\$/gi,
+                /(\d+[.,]\d{2})/g
+            ];
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                // Ignorar linhas que são claramente cabeçalho/rodapé
+                if (line.match(/^(CUPOM|NOTA|FISCAL|TOTAL|SUBTOTAL|DESCONTO|TROCO|VALOR|PAGO)/i)) {
+                    continue;
+                }
+                
+                // Procurar valores na linha
+                let value = null;
+                for (const pattern of valuePatterns) {
+                    const matches = line.match(pattern);
+                    if (matches) {
+                        const lastMatch = matches[matches.length - 1];
+                        value = parseFloat(lastMatch.replace(/R\$\s*/gi, '').replace(',', '.'));
+                        if (value && value > 0 && value < 10000) { // Valores razoáveis
+                            break;
+                        }
+                    }
+                }
+                
+                if (value) {
+                    // Tentar extrair o nome do item (remover o valor da linha)
+                    let itemName = line.replace(/R\$\s*\d+[.,]\d{2}/gi, '')
+                                       .replace(/\d+[.,]\d{2}\s*R\$/gi, '')
+                                       .replace(/\d+[.,]\d{2}/g, '')
+                                       .trim();
+                    
+                    // Se não sobrou nada, usar parte da linha anterior
+                    if (!itemName && i > 0) {
+                        itemName = lines[i - 1].trim().substring(0, 30);
+                    }
+                    
+                    // Se ainda não tem nome, usar um padrão
+                    if (!itemName || itemName.length < 2) {
+                        itemName = `Item ${items.length + 1}`;
+                    }
+                    
+                    // Limpar nome do item
+                    itemName = itemName.replace(/[^\w\s-]/g, ' ').trim().substring(0, 50);
+                    
+                    items.push({
+                        id: Date.now() + i,
+                        name: itemName || `Item ${items.length + 1}`,
+                        value: value,
+                        selected: true,
+                        personId: null
+                    });
+                }
+            }
+            
+            // Se não encontrou itens, criar itens baseados em linhas com números
+            if (items.length === 0) {
+                lines.forEach((line, index) => {
+                    const numbers = line.match(/\d+[.,]\d{2}/g);
+                    if (numbers && numbers.length > 0) {
+                        const value = parseFloat(numbers[numbers.length - 1].replace(',', '.'));
+                        if (value > 0 && value < 10000) {
+                            items.push({
+                                id: Date.now() + index,
+                                name: line.replace(/\d+[.,]\d{2}/g, '').trim().substring(0, 50) || `Item ${index + 1}`,
+                                value: value,
+                                selected: true,
+                                personId: null
+                            });
+                        }
+                    }
+                });
+            }
+            
+            return items;
+        }
+
+        function showExtractedItemsModal(items, text) {
+            const modal = document.getElementById('itemsModal');
+            const extractedItemsDiv = document.getElementById('extractedItems');
+            const ocrPreview = document.getElementById('ocrTextPreview');
+            
+            // Atualizar lista de pessoas antes de mostrar o modal
+            updatePersonSelect();
+            
+            // Mostrar texto OCR (opcional, pode ser ocultado)
+            if (text) {
+                ocrPreview.textContent = text.substring(0, 1000) + (text.length > 1000 ? '...' : '');
+                ocrPreview.style.display = 'block';
+            }
+            
+            if (items.length === 0) {
+                extractedItemsDiv.innerHTML = `
+                    <div class="empty-state">
+                        <p>Nenhum item foi encontrado no cupom.</p>
+                        <p style="font-size: 14px; margin-top: 10px;">Tente capturar uma imagem mais nítida ou adicione os itens manualmente.</p>
+                    </div>
+                `;
+            } else {
+                extractedItemsDiv.innerHTML = items.map(item => `
+                    <div class="extracted-item">
+                        <input type="checkbox" class="extracted-item-checkbox" 
+                               ${item.selected ? 'checked' : ''} 
+                               onchange="toggleItemSelection(${item.id})">
+                        <input type="text" value="${item.name}" 
+                               onchange="updateExtractedItemName(${item.id}, this.value)"
+                               placeholder="Nome do item" style="flex: 2;">
+                        <input type="number" value="${item.value.toFixed(2)}" step="0.01" 
+                               onchange="updateExtractedItemValue(${item.id}, parseFloat(this.value))"
+                               placeholder="Valor" style="flex: 1;">
+                        <select onchange="updateExtractedItemPerson(${item.id}, this.value)" style="flex: 1.5;">
+                            <option value="">Selecione pessoa</option>
+                            ${people.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
+                        </select>
+                    </div>
+                `).join('');
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function closeItemsModal() {
+            const modal = document.getElementById('itemsModal');
+            modal.classList.remove('active');
+            const preview = document.getElementById('cameraPreview');
+            preview.classList.remove('active');
+            preview.src = '';
+        }
+
+        function toggleItemSelection(itemId) {
+            const item = extractedItemsData.find(i => i.id === itemId);
+            if (item) {
+                item.selected = !item.selected;
+            }
+        }
+
+        function updateExtractedItemName(itemId, name) {
+            const item = extractedItemsData.find(i => i.id === itemId);
+            if (item) {
+                item.name = name;
+            }
+        }
+
+        function updateExtractedItemValue(itemId, value) {
+            const item = extractedItemsData.find(i => i.id === itemId);
+            if (item) {
+                item.value = value || 0;
+            }
+        }
+
+        function updateExtractedItemPerson(itemId, personId) {
+            const item = extractedItemsData.find(i => i.id === itemId);
+            if (item) {
+                item.personId = personId ? parseInt(personId) : null;
+            }
+        }
+
+        function addExtractedItems() {
+            const selectedItems = extractedItemsData.filter(item => item.selected);
+            
+            if (selectedItems.length === 0) {
+                alert('Selecione pelo menos um item para adicionar!');
+                return;
+            }
+            
+            let addedCount = 0;
+            let skippedCount = 0;
+            
+            selectedItems.forEach(item => {
+                if (!item.name || !item.value || item.value <= 0) {
+                    skippedCount++;
+                    return;
+                }
+                
+                let targetPerson;
+                
+                if (item.personId) {
+                    targetPerson = people.find(p => p.id === item.personId);
+                }
+                
+                // Se não tem pessoa selecionada, perguntar ou usar a primeira
+                if (!targetPerson) {
+                    if (people.length === 0) {
+                        alert('Adicione pelo menos uma pessoa antes de importar itens!');
+                        return;
+                    }
+                    // Usar a primeira pessoa como padrão
+                    targetPerson = people[0];
+                }
+                
+                targetPerson.items.push({
+                    id: Date.now() + Math.random(),
+                    name: item.name,
+                    value: item.value
+                });
+                
+                addedCount++;
+            });
+            
+            if (addedCount > 0) {
+                updatePeopleList();
+                updatePersonSelect();
+                updateSummary();
+                closeItemsModal();
+                alert(`${addedCount} item(ns) adicionado(s) com sucesso!${skippedCount > 0 ? ` ${skippedCount} item(ns) ignorado(s).` : ''}`);
+            } else {
+                alert('Nenhum item válido foi adicionado. Verifique os nomes e valores.');
+            }
+        }
+
+        // Adicionar pessoa
+        function addPerson() {
+            const nameInput = document.getElementById('personName');
+            const name = nameInput.value.trim();
+
+            if (!name) {
+                alert('Por favor, digite o nome da pessoa!');
+                return;
+            }
+
+            if (people.find(p => p.name.toLowerCase() === name.toLowerCase())) {
+                alert('Esta pessoa já foi adicionada!');
+                return;
+            }
+
+            people.push({
+                id: Date.now(),
+                name: name,
+                items: []
+            });
+
+            nameInput.value = '';
+            updatePeopleList();
+            updatePersonSelect();
+        }
+
+        // Adicionar item de consumo
+        function addItem() {
+            const itemName = document.getElementById('itemName').value.trim();
+            const itemValue = parseFloat(document.getElementById('itemValue').value);
+            const personId = parseInt(document.getElementById('itemPerson').value);
+
+            if (!itemName) {
+                alert('Por favor, digite o nome do item!');
+                return;
+            }
+
+            if (!itemValue || itemValue <= 0) {
+                alert('Por favor, digite um valor válido!');
+                return;
+            }
+
+            if (!personId) {
+                alert('Por favor, selecione uma pessoa!');
+                return;
+            }
+
+            const person = people.find(p => p.id === personId);
+            if (person) {
+                person.items.push({
+                    id: Date.now(),
+                    name: itemName,
+                    value: itemValue
+                });
+
+                document.getElementById('itemName').value = '';
+                document.getElementById('itemValue').value = '';
+                updatePeopleList();
+                updateSummary();
+            }
+        }
+
+        // Remover pessoa
+        function removePerson(personId) {
+            if (confirm('Tem certeza que deseja remover esta pessoa e todos os seus itens?')) {
+                people = people.filter(p => p.id !== personId);
+                updatePeopleList();
+                updatePersonSelect();
+                updateSummary();
+            }
+        }
+
+        // Remover item
+        function removeItem(personId, itemId) {
+            const person = people.find(p => p.id === personId);
+            if (person) {
+                person.items = person.items.filter(i => i.id !== itemId);
+                updatePeopleList();
+                updateSummary();
+            }
+        }
+
+        // Atualizar lista de pessoas
+        function updatePeopleList() {
+            const peopleListDiv = document.getElementById('peopleList');
+
+            if (people.length === 0) {
+                peopleListDiv.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">👤</div>
+                        <p>Nenhuma pessoa adicionada ainda.</p>
+                        <p style="font-size: 14px; margin-top: 10px;">Adicione pessoas para começar!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            peopleListDiv.innerHTML = people.map(person => {
+                const total = person.items.reduce((sum, item) => sum + item.value, 0);
+                const itemsHtml = person.items.length > 0
+                    ? person.items.map(item => `
+                        <div class="item">
+                            <span class="item-name">${item.name}</span>
+                            <span class="item-value">R$ ${item.value.toFixed(2).replace('.', ',')}</span>
+                            <button class="btn-remove" onclick="removeItem(${person.id}, ${item.id})" title="Remover item">×</button>
+                        </div>
+                    `).join('')
+                    : '<div style="color: var(--text-light); font-size: 14px; padding: 10px 0;">Nenhum item adicionado</div>';
+
+                return `
+                    <div class="person-card">
+                        <div class="person-header">
+                            <span class="person-name">${person.name}</span>
+                            <span class="person-total">R$ ${total.toFixed(2).replace('.', ',')}</span>
+                        </div>
+                        <div class="items-list">
+                            ${itemsHtml}
+                        </div>
+                        <button class="btn btn-danger" onclick="removePerson(${person.id})" style="width: 100%; margin-top: 10px; padding: 8px;">
+                            Remover Pessoa
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Atualizar select de pessoas
+        function updatePersonSelect() {
+            const select = document.getElementById('itemPerson');
+            select.innerHTML = '<option value="">Selecione uma pessoa</option>' +
+                people.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+        }
+
+        // Atualizar resumo
+        function updateSummary() {
+            const summarySection = document.getElementById('summarySection');
+            const summaryContent = document.getElementById('summaryContent');
+            const equalDivisionValue = document.getElementById('equalDivisionValue');
+
+            if (people.length === 0) {
+                summarySection.style.display = 'none';
+                return;
+            }
+
+            summarySection.style.display = 'block';
+
+            const totals = people.map(person => ({
+                name: person.name,
+                total: person.items.reduce((sum, item) => sum + item.value, 0)
+            }));
+
+            const grandTotal = totals.reduce((sum, p) => sum + p.total, 0);
+            const equalDivision = grandTotal / people.length;
+
+            summaryContent.innerHTML = totals.map(p => `
+                <div class="summary-row">
+                    <span class="summary-label">${p.name}</span>
+                    <span class="summary-value">R$ ${p.total.toFixed(2).replace('.', ',')}</span>
+                </div>
+            `).join('') + `
+                <div class="summary-row">
+                    <span class="summary-label">Total Geral</span>
+                    <span class="summary-value">R$ ${grandTotal.toFixed(2).replace('.', ',')}</span>
+                </div>
+            `;
+
+            equalDivisionValue.textContent = `R$ ${equalDivision.toFixed(2).replace('.', ',')}`;
+        }
+
+        // Permitir adicionar pessoa com Enter
+        document.getElementById('personName').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addPerson();
+            }
+        });
+
+        // Permitir adicionar item com Enter
+        document.getElementById('itemValue').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addItem();
+            }
+        });
+
+        document.getElementById('itemName').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addItem();
+            }
+        });
+    </script>
+</body>
+</html>

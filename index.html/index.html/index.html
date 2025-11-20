@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NuBank - Seu banco digital</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --nubank-purple: #8A05BE;
+            --nubank-purple-dark: #6B0494;
+            --nubank-purple-light: #A855F7;
+            --white: #FFFFFF;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
+            --green: #10B981;
+            --red: #EF4444;
+            --yellow: #F59E0B;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--nubank-purple);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .app-container {
+            max-width: 428px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--nubank-purple);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            padding: 50px 20px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Card Section */
+        .card-section {
+            padding: 0 20px 30px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .card-wrapper {
+            perspective: 1000px;
+            margin-bottom: 30px;
+        }
+
+        .credit-card {
+            width: 100%;
+            height: 220px;
+            background: linear-gradient(135deg, var(--nubank-purple-light) 0%, var(--nubank-purple) 100%);
+            border-radius: 20px;
+            padding: 25px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+        }
+
+        .credit-card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-front,
+        .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+        }
+
+        .card-chip {
+            width: 50px;
+            height: 40px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .card-number {
+            font-size: 24px;
+            letter-spacing: 4px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .card-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .card-holder {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .card-label {
+            font-size: 12px;
+            opacity: 0.8;
+            text-transform: uppercase;
+        }
+
+        .card-name {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .card-expiry {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            text-align: right;
+        }
+
+        .card-cvv {
+            background: var(--white);
+            color: var(--gray-800);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: right;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+
+        .card-stripe {
+            background: var(--gray-800);
+            height: 50px;
+            margin: 20px 0;
+        }
+
+        /* Balance Section */
+        .balance-section {
+            padding: 0 20px;
+            margin-bottom: 30px;
+        }
+
+        .balance-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .balance-amount {
+            font-size: 36px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .balance-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: var(--white);
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.2s;
+        }
+
+        .balance-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+            padding: 0 20px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .quick-actions::-webkit-scrollbar {
+            display: none;
+        }
+
+        .action-btn {
+            min-width: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--white);
+            padding: 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            backdrop-filter: blur(10px);
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .action-icon {
+            font-size: 28px;
+        }
+
+        .action-label {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Transactions */
+        .transactions-section {
+            background: var(--white);
+            border-radius: 30px 30px 0 0;
+            padding: 30px 20px;
+            min-height: calc(100vh - 500px);
+            color: var(--gray-800);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .filter-btn {
+            background: var(--gray-100);
+            border: none;
+            color: var(--gray-700);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            background: var(--gray-200);
+        }
+
+        .transaction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: var(--gray-50);
+            border-radius: 15px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .transaction-item:hover {
+            background: var(--gray-100);
+            transform: translateX(5px);
+        }
+
+        .transaction-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .transaction-icon.income {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--green);
+        }
+
+        .transaction-icon.expense {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--red);
+        }
+
+        .transaction-icon.transfer {
+            background: rgba(139, 5, 190, 0.1);
+            color: var(--nubank-purple);
+        }
+
+        .transaction-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .transaction-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 4px;
+        }
+
+        .transaction-date {
+            font-size: 14px;
+            color: var(--gray-500);
+        }
+
+        .transaction-amount {
+            font-size: 18px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .transaction-amount.income {
+            color: var(--green);
+        }
+
+        .transaction-amount.expense {
+            color: var(--red);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray-500);
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 428px;
+            background: var(--white);
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            color: var(--gray-400);
+            cursor: pointer;
+            padding: 8px 20px;
+            transition: color 0.2s;
+            font-size: 12px;
+        }
+
+        .nav-item.active {
+            color: var(--nubank-purple);
+        }
+
+        .nav-icon {
+            font-size: 24px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: var(--gray-500);
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--gray-200);
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--nubank-purple);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--nubank-purple);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--nubank-purple-dark);
+        }
+
+        /* Responsive */
+        @media (max-width: 428px) {
+            .app-container {
+                max-width: 100%;
+            }
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .transactions-section {
+            animation: slideUp 0.3s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="logo">nu</div>
+            </div>
+            <div class="header-right">
+                <button class="icon-btn" onclick="toggleNotifications()">🔔</button>
+                <button class="icon-btn" onclick="openSettings()">⚙️</button>
+            </div>
+        </div>
+
+        <!-- Card Section -->
+        <div class="card-section">
+            <div class="card-wrapper">
+                <div class="credit-card" id="creditCard" onclick="flipCard()">
+                    <div class="card-front">
+                        <div class="card-chip"></div>
+                        <div class="card-number" id="cardNumber">1234 5678 9012 3456</div>
+                        <div class="card-info">
+                            <div class="card-holder">
+                                <div class="card-label">Nome</div>
+                                <div class="card-name" id="cardName">SEU NOME</div>
+                            </div>
+                            <div class="card-expiry">
+                                <div class="card-label">Validade</div>
+                                <div class="card-name">12/28</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-back">
+                        <div class="card-stripe"></div>
+                        <div class="card-cvv">CVV: 123</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Balance Section -->
+        <div class="balance-section">
+            <div class="balance-label">Saldo em conta</div>
+            <div class="balance-amount">
+                <span id="balanceAmount">R$ 0,00</span>
+                <button class="balance-toggle" onclick="toggleBalance()" id="balanceToggle">👁️</button>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <button class="action-btn" onclick="openModal('transferModal')">
+                <div class="action-icon">💸</div>
+                <div class="action-label">Transferir</div>
+            </button>
+            <button class="action-btn" onclick="openModal('depositModal')">
+                <div class="action-icon">💰</div>
+                <div class="action-label">Depositar</div>
+            </button>
+            <button class="action-btn" onclick="openModal('pixModal')">
+                <div class="action-icon">⚡</div>
+                <div class="action-label">Pix</div>
+            </button>
+            <button class="action-btn" onclick="openModal('payModal')">
+                <div class="action-icon">📱</div>
+                <div class="action-label">Pagar</div>
+            </button>
+            <button class="action-btn" onclick="openModal('loanModal')">
+                <div class="action-icon">💳</div>
+                <div class="action-label">Empréstimo</div>
+            </button>
+        </div>
+
+        <!-- Transactions Section -->
+        <div class="transactions-section">
+            <div class="section-header">
+                <h2 class="section-title">Transações</h2>
+                <button class="filter-btn" onclick="filterTransactions()">Filtrar</button>
+            </div>
+            <div class="transaction-list" id="transactionList">
+                <!-- Transactions will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <button class="nav-item active" onclick="setActiveNav(this)">
+                <div class="nav-icon">🏠</div>
+                <div>Início</div>
+            </button>
+            <button class="nav-item" onclick="setActiveNav(this)">
+                <div class="nav-icon">📊</div>
+                <div>Cartão</div>
+            </button>
+            <button class="nav-item" onclick="setActiveNav(this)">
+                <div class="nav-icon">📈</div>
+                <div>Investir</div>
+            </button>
+            <button class="nav-item" onclick="setActiveNav(this)">
+                <div class="nav-icon">👤</div>
+                <div>Perfil</div>
+            </button>
+        </div>
+    </div>
+
+    <!-- Transfer Modal -->
+    <div id="transferModal" class="modal" onclick="if(event.target === this) closeModal('transferModal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 class="modal-title">Transferir</h2>
+                <button class="modal-close" onclick="closeModal('transferModal')">×</button>
+            </div>
+            <form onsubmit="handleTransfer(event)">
+                <div class="form-group">
+                    <label class="form-label">Para quem?</label>
+                    <input type="text" class="form-input" placeholder="Nome ou CPF" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Valor</label>
+                    <input type="number" class="form-input" placeholder="R$ 0,00" step="0.01" min="0.01" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Transferir</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Deposit Modal -->
+    <div id="depositModal" class="modal" onclick="if(event.target === this) closeModal('depositModal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 class="modal-title">Depositar</h2>
+                <button class="modal-close" onclick="closeModal('depositModal')">×</button>
+            </div>
+            <form onsubmit="handleDeposit(event)">
+                <div class="form-group">
+                    <label class="form-label">Valor</label>
+                    <input type="number" class="form-input" placeholder="R$ 0,00" step="0.01" min="0.01" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Depositar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- PIX Modal -->
+    <div id="pixModal" class="modal" onclick="if(event.target === this) closeModal('pixModal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 class="modal-title">Pix</h2>
+                <button class="modal-close" onclick="closeModal('pixModal')">×</button>
+            </div>
+            <form onsubmit="handlePix(event)">
+                <div class="form-group">
+                    <label class="form-label">Chave Pix</label>
+                    <input type="text" class="form-input" placeholder="CPF, e-mail ou chave aleatória" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Valor</label>
+                    <input type="number" class="form-input" placeholder="R$ 0,00" step="0.01" min="0.01" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Enviar Pix</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Pay Modal -->
+    <div id="payModal" class="modal" onclick="if(event.target === this) closeModal('payModal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 class="modal-title">Pagar</h2>
+                <button class="modal-close" onclick="closeModal('payModal')">×</button>
+            </div>
+            <form onsubmit="handlePay(event)">
+                <div class="form-group">
+                    <label class="form-label">Código de barras</label>
+                    <input type="text" class="form-input" placeholder="Digite o código" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Valor</label>
+                    <input type="number" class="form-input" placeholder="R$ 0,00" step="0.01" min="0.01" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Pagar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loan Modal -->
+    <div id="loanModal" class="modal" onclick="if(event.target === this) closeModal('loanModal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 class="modal-title">Empréstimo</h2>
+                <button class="modal-close" onclick="closeModal('loanModal')">×</button>
+            </div>
+            <div style="text-align: center; padding: 20px 0;">
+                <div style="font-size: 32px; margin-bottom: 10px;">💰</div>
+                <div style="font-size: 24px; font-weight: 700; color: var(--gray-900); margin-bottom: 10px;">
+                    R$ 50.000,00
+                </div>
+                <div style="color: var(--gray-500); margin-bottom: 20px;">
+                    Crédito disponível
+                </div>
+                <button class="btn btn-primary" onclick="closeModal('loanModal')">Solicitar Empréstimo</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // App State
+        let balance = 0;
+        let balanceVisible = true;
+        let transactions = [
+            {
+                id: 1,
+                type: 'expense',
+                name: 'Supermercado',
+                amount: -150.50,
+                date: 'Hoje, 14:30',
+                icon: '🛒'
+            },
+            {
+                id: 2,
+                type: 'income',
+                name: 'Salário',
+                amount: 5000.00,
+                date: 'Ontem, 08:00',
+                icon: '💰'
+            },
+            {
+                id: 3,
+                type: 'expense',
+                name: 'Restaurante',
+                amount: -85.00,
+                date: '15 Jan, 19:45',
+                icon: '🍽️'
+            },
+            {
+                id: 4,
+                type: 'transfer',
+                name: 'Transferência recebida',
+                amount: 200.00,
+                date: '14 Jan, 10:20',
+                icon: '💸'
+            },
+            {
+                id: 5,
+                type: 'expense',
+                name: 'Uber',
+                amount: -25.50,
+                date: '13 Jan, 18:30',
+                icon: '🚗'
+            },
+            {
+                id: 6,
+                type: 'expense',
+                name: 'Netflix',
+                amount: -39.90,
+                date: '12 Jan, 00:00',
+                icon: '📺'
+            }
+        ];
+
+        // Initialize
+        function init() {
+            calculateBalance();
+            updateBalanceDisplay();
+            renderTransactions();
+        }
+
+        // Card Functions
+        function flipCard() {
+            const card = document.getElementById('creditCard');
+            card.classList.toggle('flipped');
+        }
+
+        // Balance Functions
+        function calculateBalance() {
+            balance = transactions.reduce((sum, t) => sum + t.amount, 0);
+        }
+
+        function updateBalanceDisplay() {
+            const balanceElement = document.getElementById('balanceAmount');
+            if (balanceVisible) {
+                balanceElement.textContent = formatCurrency(balance);
+            } else {
+                balanceElement.textContent = 'R$ •••';
+            }
+        }
+
+        function toggleBalance() {
+            balanceVisible = !balanceVisible;
+            updateBalanceDisplay();
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(value);
+        }
+
+        // Transaction Functions
+        function renderTransactions() {
+            const list = document.getElementById('transactionList');
+            
+            if (transactions.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <div>Nenhuma transação ainda</div>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = transactions.map(t => `
+                <div class="transaction-item" onclick="viewTransaction(${t.id})">
+                    <div class="transaction-icon ${t.type}">
+                        ${t.icon}
+                    </div>
+                    <div class="transaction-details">
+                        <div class="transaction-name">${t.name}</div>
+                        <div class="transaction-date">${t.date}</div>
+                    </div>
+                    <div class="transaction-amount ${t.type === 'income' ? 'income' : t.type === 'expense' ? 'expense' : ''}">
+                        ${t.amount > 0 ? '+' : ''}${formatCurrency(t.amount)}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function viewTransaction(id) {
+            const transaction = transactions.find(t => t.id === id);
+            if (transaction) {
+                alert(`${transaction.name}\n${formatCurrency(transaction.amount)}\n${transaction.date}`);
+            }
+        }
+
+        function filterTransactions() {
+            alert('Filtros: Todas | Entradas | Saídas');
+        }
+
+        // Modal Functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Form Handlers
+        function handleTransfer(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const amount = parseFloat(e.target.querySelector('input[type="number"]').value);
+            
+            if (amount > balance) {
+                alert('Saldo insuficiente!');
+                return;
+            }
+
+            const newTransaction = {
+                id: Date.now(),
+                type: 'expense',
+                name: 'Transferência',
+                amount: -amount,
+                date: 'Agora',
+                icon: '💸'
+            };
+
+            transactions.unshift(newTransaction);
+            calculateBalance();
+            updateBalanceDisplay();
+            renderTransactions();
+            closeModal('transferModal');
+            e.target.reset();
+            alert('Transferência realizada com sucesso!');
+        }
+
+        function handleDeposit(e) {
+            e.preventDefault();
+            const amount = parseFloat(e.target.querySelector('input[type="number"]').value);
+            
+            const newTransaction = {
+                id: Date.now(),
+                type: 'income',
+                name: 'Depósito',
+                amount: amount,
+                date: 'Agora',
+                icon: '💰'
+            };
+
+            transactions.unshift(newTransaction);
+            calculateBalance();
+            updateBalanceDisplay();
+            renderTransactions();
+            closeModal('depositModal');
+            e.target.reset();
+            alert('Depósito realizado com sucesso!');
+        }
+
+        function handlePix(e) {
+            e.preventDefault();
+            const amount = parseFloat(e.target.querySelectorAll('input[type="number"]')[0].value);
+            
+            if (amount > balance) {
+                alert('Saldo insuficiente!');
+                return;
+            }
+
+            const newTransaction = {
+                id: Date.now(),
+                type: 'expense',
+                name: 'Pix enviado',
+                amount: -amount,
+                date: 'Agora',
+                icon: '⚡'
+            };
+
+            transactions.unshift(newTransaction);
+            calculateBalance();
+            updateBalanceDisplay();
+            renderTransactions();
+            closeModal('pixModal');
+            e.target.reset();
+            alert('Pix enviado com sucesso!');
+        }
+
+        function handlePay(e) {
+            e.preventDefault();
+            const amount = parseFloat(e.target.querySelector('input[type="number"]').value);
+            
+            if (amount > balance) {
+                alert('Saldo insuficiente!');
+                return;
+            }
+
+            const newTransaction = {
+                id: Date.now(),
+                type: 'expense',
+                name: 'Pagamento',
+                amount: -amount,
+                date: 'Agora',
+                icon: '📱'
+            };
+
+            transactions.unshift(newTransaction);
+            calculateBalance();
+            updateBalanceDisplay();
+            renderTransactions();
+            closeModal('payModal');
+            e.target.reset();
+            alert('Pagamento realizado com sucesso!');
+        }
+
+        // Navigation
+        function setActiveNav(element) {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            element.classList.add('active');
+        }
+
+        // Header Functions
+        function toggleNotifications() {
+            alert('Notificações');
+        }
+
+        function openSettings() {
+            alert('Configurações');
+        }
+
+        // Initialize app
+        init();
+    </script>
+</body>
+</html>
